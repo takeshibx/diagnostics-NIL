@@ -22,11 +22,16 @@ def file_hash(filename):
     hash : str
         SHA1 hexadecimal hash string for contents of `filename`.
     """
+    # make hasher
+    hasher = hashlib.sha1()
+
     # Open the file, read contents as bytes.
+    with open(filename, "rb") as f:
+        # update the hasher
+        hasher.update(f.read())
+
     # Calculate, return SHA1 has on the bytes from the file.
-    # This is a placeholder, replace it to write your solution.
-    raise NotImplementedError(
-        'This is just a template -- you are expected to code this.')
+    return hasher.hexdigest()
 
 
 def validate_data(data_directory):
@@ -48,13 +53,19 @@ def validate_data(data_directory):
         ``data_hashes.txt`` file.
     """
     # Read lines from ``data_hashes.txt`` file.
+    data_hashes = Path(data_directory) / "hash_list.txt"
+    with open(str(data_hashes), "r") as f:
+        lines = [l.strip() for l in f.readlines()]
+
     # Split into SHA1 hash and filename
-    # Calculate actual hash for given filename.
-    # If hash for filename is not the same as the one in the file, raise
-    # ValueError
-    # This is a placeholder, replace it to write your solution.
-    raise NotImplementedError(
-        'This is just a template -- fill out the template with code.')
+    for l in lines:
+        saved_file_hash, file_path = l.split(" ")
+        # Calculate actual hash for given filename.
+        computed_file_hash = file_hash(str(Path(data_directory).parent / file_path))
+        # If hash for filename is not the same as the one in the file, raise
+        # ValueError
+        if saved_file_hash != computed_file_hash:
+            raise ValueError(f"Hash does not match for {file_path}.")
 
 
 def main():
